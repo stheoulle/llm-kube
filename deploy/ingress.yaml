@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: llm-ingress
+  namespace: llm
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: llm-redirect-to-https@kubernetescrd
+    # Si tu veux forcer la redirection HTTP vers HTTPS dans Traefik, c'est géré via Middleware
+spec:
+  rules:
+  - host: llm.stheoulle.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: llm-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - llm.stheoulle.com
+    secretName: llm-tls-cert

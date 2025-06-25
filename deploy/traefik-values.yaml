@@ -1,0 +1,48 @@
+ports:
+  web:
+    nodePort: 32080
+    port: 80
+    expose:
+      default: true
+
+  websecure:
+    nodePort: 32443
+    port: 443
+    expose:
+      default: true
+
+  metrics:
+    port: 9100
+    expose:
+      default: true
+
+service:
+  type: NodePort
+
+ingressRoute:
+  dashboard:
+    enabled: true
+
+ingressClass:
+  enabled: false
+
+additionalArguments:
+  - "--entrypoints.web.address=:80"
+  - "--entrypoints.websecure.address=:443"
+  - "--certificatesresolvers.le.acme.email=s.theoulle@outlook.fr"
+  - "--certificatesresolvers.le.acme.storage=/data/acme.json"
+  - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+  - "--log.level=INFO"
+  - "--metrics.prometheus=true"
+  - "--metrics.prometheus.entrypoint=metrics"
+
+persistence:
+  enabled: true
+  size: 1Gi
+  path: /data
+
+metrics:
+  prometheus:
+    enabled: true
+    addEntryPointsLabels: true
+    addServicesLabels: true
